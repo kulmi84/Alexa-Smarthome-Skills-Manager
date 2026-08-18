@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#111827">
+  <title>Alexa Smarthome/Skills-Manager</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <header class="topbar">
+    <div class="shell topbar__content">
+      <a class="brand" href="/" aria-label="Alexa Smarthome/Skills-Manager – Startseite">
+        <span class="brand__mark" aria-hidden="true">A</span>
+        <span>
+          <strong>Alexa Smarthome/Skills-Manager</strong>
+          <small>Lokale Geräte- und Skillverwaltung</small>
+        </span>
+      </a>
+      <span class="readonly-badge">
+        <span aria-hidden="true">●</span>
+        Änderungen nur nach Bestätigung
+      </span>
+    </div>
+  </header>
+
+  <main id="main" class="shell page">
+    <section class="connection-card" aria-labelledby="connection-title">
+      <div class="connection-card__status">
+        <span id="status-dot" class="status-dot status-dot--idle" aria-hidden="true"></span>
+        <div>
+          <p class="eyebrow">Amazon-Verbindung</p>
+          <h1 id="connection-title">Status wird geprüft …</h1>
+          <p id="status-message" class="muted" role="status" aria-live="polite">Bitte einen Moment warten.</p>
+        </div>
+      </div>
+      <div class="button-row">
+        <button id="auth-button" class="button button--secondary" type="button">
+          Mit Amazon verbinden
+        </button>
+        <button id="load-button" class="button button--primary" type="button" disabled>
+          Geräte &amp; Skills laden
+        </button>
+        <button id="export-button" class="button button--secondary" type="button" disabled>
+          CSV exportieren
+        </button>
+        <button id="settings-button" class="icon-button" type="button" aria-label="Lokale Anmeldung verwalten" title="Lokale Anmeldung verwalten">
+          <span aria-hidden="true">⋯</span>
+        </button>
+      </div>
+    </section>
+
+    <div id="auth-notice" class="notice notice--info" hidden>
+      <div>
+        <strong>Amazon-Anmeldung läuft in einem zweiten Fenster.</strong>
+        <p>Nach der Bestätigung wechselt diese Seite automatisch auf „Verbunden“.</p>
+      </div>
+      <a id="auth-link" class="text-link" href="#" target="_blank" rel="noopener">Anmeldefenster öffnen</a>
+    </div>
+
+    <div id="error-notice" class="notice notice--error" role="alert" hidden>
+      <div>
+        <strong>Die Aktion konnte nicht abgeschlossen werden.</strong>
+        <p id="error-message"></p>
+      </div>
+      <button id="dismiss-error" class="notice__close" type="button" aria-label="Fehlermeldung schließen">×</button>
+    </div>
+
+    <div id="success-notice" class="notice notice--success" role="status" hidden>
+      <div>
+        <strong>Alexa-Aufräumen abgeschlossen.</strong>
+        <p id="success-message"></p>
+      </div>
+      <button id="dismiss-success" class="notice__close" type="button" aria-label="Erfolgsmeldung schließen">×</button>
+    </div>
+
+    <section id="welcome" class="welcome" aria-labelledby="welcome-title">
+      <div class="welcome__copy">
+        <p class="eyebrow">Einmalige Bestandsaufnahme</p>
+        <h2 id="welcome-title">Was kennt Alexa noch?</h2>
+        <p>
+          Die Übersicht liest deine bekannten Smart-Home-Einträge und aktivierten Alexa-Skills erst auf Knopfdruck aus. Geräte werden nach Skill oder direkter Verbindung gruppiert.
+          Gelöscht wird ausschließlich nach deiner ausdrücklichen Auswahl und Bestätigung.
+        </p>
+      </div>
+      <ol class="steps" aria-label="Ablauf">
+        <li><span>1</span><div><strong>Verbinden</strong><small>Amazon-Anmeldung lokal speichern</small></div></li>
+        <li><span>2</span><div><strong>Laden</strong><small>Inventar einmalig abrufen</small></div></li>
+        <li><span>3</span><div><strong>Aufräumen</strong><small>Einzeln oder gesammelt entfernen</small></div></li>
+      </ol>
+      <p class="privacy-note"><span aria-hidden="true">▣</span> Keine Cloud-Datenbank, kein Tracking, keine automatische Abfrage oder Löschung.</p>
+    </section>
+
+    <section id="summary-section" class="summary-grid" aria-label="Zusammenfassung" hidden>
+      <button id="devices-view-card" class="metric-card metric-card--selectable metric-card--active" type="button" aria-pressed="true">
+        <span class="metric-card__icon metric-card__icon--blue" aria-hidden="true">◇</span>
+        <div><strong id="metric-active-devices">0</strong><span>Aktive Geräte</span></div>
+      </button>
+      <button id="disabled-devices-view-card" class="metric-card metric-card--selectable" type="button" aria-pressed="false">
+        <span class="metric-card__icon metric-card__icon--slate" aria-hidden="true">⊘</span>
+        <div><strong id="metric-disabled-devices">0</strong><span>Deaktivierte Geräte</span></div>
+      </button>
+      <button id="skills-view-card" class="metric-card metric-card--selectable" type="button" aria-pressed="false">
+        <span class="metric-card__icon metric-card__icon--violet" aria-hidden="true">⌁</span>
+        <div><strong id="metric-active-skills">0</strong><span>Aktive Skills</span></div>
+      </button>
+      <article class="metric-card">
+        <span class="metric-card__icon metric-card__icon--amber" aria-hidden="true">!</span>
+        <div><strong id="metric-unreachable">0</strong><span>Nicht erreichbar</span></div>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__icon metric-card__icon--rose" aria-hidden="true">≋</span>
+        <div><strong id="metric-duplicates">0</strong><span>Namensdubletten</span></div>
+      </article>
+    </section>
+
+    <section id="source-section" class="panel" aria-labelledby="source-title" hidden>
+      <div class="panel__header">
+        <div>
+          <p class="eyebrow">Herkunft</p>
+          <h2 id="source-title">Skills und Verbindungen</h2>
+        </div>
+        <button id="toggle-sources" class="button button--quiet" type="button" aria-expanded="false">Quellen anzeigen</button>
+      </div>
+      <div id="source-list" class="source-list" hidden></div>
+    </section>
+
+    <section id="skills-section" class="panel inventory" aria-labelledby="skills-title" hidden>
+      <div class="panel__header panel__header--inventory">
+        <div>
+          <p class="eyebrow">Alexa-Konto</p>
+          <h2 id="skills-title">Aktivierte Skills</h2>
+          <p class="panel__hint">Skills und Smart-Home-Geräte bleiben getrennt. Eine Deaktivierung wird immer einzeln bestätigt.</p>
+        </div>
+        <span id="skills-result-count" class="result-count">0 Skills</span>
+      </div>
+
+      <div class="skill-command-panel" aria-labelledby="skill-command-title">
+        <div class="skill-command-panel__copy">
+          <p class="eyebrow">Direkte Aktion</p>
+          <strong id="skill-command-title">Skill direkt über Alexa deaktivieren</strong>
+          <p>
+            Die Anwendung sendet den festen Textbefehl „deaktiviere den Skill …“ an ein ausgewähltes Echo und lädt danach die aktive Skillliste erneut.
+          </p>
+        </div>
+        <label class="skill-command-panel__device">
+          <span>Echo für den Deaktivierungsbefehl</span>
+          <select id="skill-command-device" disabled>
+            <option value="">Zuerst Geräte &amp; Skills laden …</option>
+          </select>
+        </label>
+        <p id="skill-command-note" class="skill-command-panel__note" role="status" aria-live="polite">
+          Wähle zunächst ein Echo.
+        </p>
+      </div>
+
+      <form id="skills-filters" class="filters skills-filters" aria-label="Aktivierte Skills filtern">
+        <label class="search-field">
+          <span class="visually-hidden">Skills durchsuchen</span>
+          <span class="search-field__icon" aria-hidden="true">⌕</span>
+          <input id="skills-search-input" type="search" placeholder="Skillname oder Skill-ID …" autocomplete="off">
+        </label>
+        <label>
+          <span class="visually-hidden">Skilltyp</span>
+          <select id="skills-type-filter"><option value="">Alle Skilltypen</option></select>
+        </label>
+        <label class="check-filter">
+          <input id="skills-smarthome-filter" type="checkbox">
+          <span>Nur mit Smart-Home-Geräten</span>
+        </label>
+        <button id="reset-skills-filters" class="button button--quiet" type="button">Filter löschen</button>
+      </form>
+
+      <div id="skills-warning" class="inline-warning" hidden></div>
+      <div class="table-wrap">
+        <table id="skills-table">
+          <thead>
+            <tr>
+              <th scope="col">Skill</th>
+              <th scope="col">Typ</th>
+              <th scope="col">Smart Home</th>
+              <th scope="col"><span class="visually-hidden">Skill deaktivieren</span></th>
+            </tr>
+          </thead>
+          <tbody id="skills-table-body"></tbody>
+        </table>
+        <div id="skills-no-results" class="no-results" hidden>
+          <span aria-hidden="true">⌕</span>
+          <strong>Keine passenden Skills</strong>
+          <p>Ändere die Filter oder setze sie zurück.</p>
+        </div>
+      </div>
+      <p class="table-footnote">
+        Die Deaktivierung verwendet einen Alexa-Textbefehl. Beim Deaktivieren eines Smart-Home-Skills können dessen zugehörige Alexa-Geräte sofort verschwinden.
+      </p>
+    </section>
+
+    <section id="inventory-section" class="panel inventory" aria-labelledby="inventory-title" hidden>
+      <div class="panel__header panel__header--inventory">
+        <div>
+          <p class="eyebrow">Geräteliste</p>
+          <h2 id="inventory-title">Alle bekannten Geräte und Einträge</h2>
+          <p id="loaded-at" class="panel__hint"></p>
+        </div>
+        <span id="result-count" class="result-count">0 Einträge</span>
+      </div>
+
+      <form id="filters" class="filters" aria-label="Geräteliste filtern">
+        <label class="search-field">
+          <span class="visually-hidden">Geräte durchsuchen</span>
+          <span class="search-field__icon" aria-hidden="true">⌕</span>
+          <input id="search-input" type="search" placeholder="Name, Hersteller, Modell oder ID …" autocomplete="off">
+        </label>
+        <label>
+          <span class="visually-hidden">Skill oder Quelle</span>
+          <select id="source-filter"><option value="">Alle Skills / Quellen</option></select>
+        </label>
+        <label>
+          <span class="visually-hidden">Gerätetyp</span>
+          <select id="type-filter"><option value="">Alle Gerätetypen</option></select>
+        </label>
+        <label>
+          <span class="visually-hidden">Status</span>
+          <select id="status-filter">
+            <option value="">Jeder Status</option>
+            <option value="ACTIVE" selected>Aktiviert</option>
+            <option value="UNREACHABLE">Nicht erreichbar</option>
+            <option value="DISABLED">Deaktiviert</option>
+            <option value="UNKNOWN">Status unbekannt</option>
+            <option value="REACHABLE">Erreichbar</option>
+          </select>
+        </label>
+        <label class="check-filter">
+          <input id="cleanup-filter" type="checkbox">
+          <span>Nur mögliche Altlasten</span>
+        </label>
+        <label class="check-filter">
+          <input id="duplicate-filter" type="checkbox">
+          <span>Nur Namensdubletten</span>
+        </label>
+        <button id="reset-filters" class="button button--quiet" type="button">Filter löschen</button>
+      </form>
+
+      <div id="selection-bar" class="selection-bar" hidden>
+        <div>
+          <strong id="selection-count">0 ausgewählt</strong>
+          <span>Die Sammelauswahl umfasst nur mögliche Altlasten.</span>
+        </div>
+        <div class="button-row">
+          <button id="select-visible" class="button button--secondary" type="button">Sichtbare Altlasten auswählen</button>
+          <button id="clear-selection" class="button button--quiet" type="button" disabled>Auswahl leeren</button>
+          <button id="delete-selected" class="button button--danger" type="button" disabled>Auswahl löschen</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="selection-cell" scope="col"><span class="visually-hidden">Auswahl</span></th>
+              <th scope="col">Gerät</th>
+              <th scope="col">Typ</th>
+              <th scope="col">Skill / Quelle</th>
+              <th scope="col">Hersteller / Modell</th>
+              <th scope="col">Verbunden über</th>
+              <th scope="col">Status</th>
+              <th scope="col">Zuletzt gesehen</th>
+              <th scope="col"><span class="visually-hidden">Details</span></th>
+            </tr>
+          </thead>
+          <tbody id="device-table-body"></tbody>
+        </table>
+        <div id="no-results" class="no-results" hidden>
+          <span aria-hidden="true">⌕</span>
+          <strong>Keine passenden Einträge</strong>
+          <p>Ändere die Filter oder setze sie zurück.</p>
+        </div>
+      </div>
+      <p class="table-footnote">
+        „Deaktivieren“ sperrt den Eintrag nur innerhalb von Alexa; er wird nicht gelöscht und kann später wieder aktiviert werden. Zusammengehörige Matter-Endpunkte werden dabei gemeinsam umgeschaltet.
+      </p>
+    </section>
+  </main>
+
+  <footer class="shell footer">
+    <span>Alexa Smarthome/Skills-Manager · lokal auf deiner QNAP</span>
+    <span>Version 0.6.2 · Geräte- und Skillverwaltung</span>
+  </footer>
+
+  <dialog id="details-dialog" class="dialog">
+    <div class="dialog__header">
+      <div>
+        <p class="eyebrow">Alexa-Eintrag</p>
+        <h2 id="details-title">Gerätedetails</h2>
+      </div>
+      <button class="dialog__close" type="button" data-close-dialog="details-dialog" aria-label="Details schließen">×</button>
+    </div>
+    <div id="details-content" class="details-grid"></div>
+    <div class="dialog__footer dialog__footer--split">
+      <div class="button-row">
+        <button id="details-protect-button" class="button button--primary" type="button">Aktiv / behalten</button>
+        <button id="details-enable-button" class="button button--secondary" type="button">Deaktivieren</button>
+        <button id="details-delete-button" class="button button--danger" type="button">Aus Alexa entfernen</button>
+      </div>
+      <button class="button button--secondary" type="button" data-close-dialog="details-dialog">Schließen</button>
+    </div>
+  </dialog>
+
+  <dialog id="delete-dialog" class="dialog dialog--small">
+    <div class="dialog__header">
+      <div>
+        <p class="eyebrow">Endgültige Bestätigung</p>
+        <h2 id="delete-title">Alexa-Einträge löschen</h2>
+      </div>
+      <button class="dialog__close" type="button" data-close-dialog="delete-dialog" aria-label="Löschdialog schließen">×</button>
+    </div>
+    <div class="delete-confirmation">
+      <p id="delete-summary"></p>
+      <div id="delete-list" class="delete-list" aria-label="Ausgewählte Alexa-Einträge"></div>
+      <div class="delete-warning">
+        <strong>Das entfernt nur die ausgewählten Einträge aus Alexa.</strong>
+        <p>Ein weiterhin verbundener Skill kann sie bei einer späteren Gerätesuche erneut anlegen. Teilerfolge werden einzeln gemeldet.</p>
+      </div>
+      <label class="delete-check">
+        <input id="delete-confirm-checkbox" type="checkbox">
+        <span>Ich habe Anzahl und Namen geprüft und möchte genau diese Alexa-Einträge löschen.</span>
+      </label>
+    </div>
+    <div class="dialog__footer">
+      <button class="button button--secondary" type="button" data-close-dialog="delete-dialog">Abbrechen</button>
+      <button id="delete-confirm-button" class="button button--danger" type="button" disabled>Jetzt löschen</button>
+    </div>
+  </dialog>
+
+  <dialog id="settings-dialog" class="dialog dialog--small">
+    <div class="dialog__header">
+      <div>
+        <p class="eyebrow">Lokal gespeichert</p>
+        <h2>Amazon-Anmeldung</h2>
+      </div>
+      <button class="dialog__close" type="button" data-close-dialog="settings-dialog" aria-label="Einstellungen schließen">×</button>
+    </div>
+    <p>
+      Die Anmeldedaten liegen ausschließlich im lokalen Docker-Volume <code>alexa-geraeteuebersicht-session</code>. Beim Entfernen wird nur diese lokale Sitzung gelöscht.
+    </p>
+    <div class="settings-status">
+      <span id="saved-session-dot" class="status-dot status-dot--idle" aria-hidden="true"></span>
+      <span id="saved-session-text">Status wird geprüft …</span>
+    </div>
+    <div class="danger-zone">
+      <div>
+        <strong>Lokale Anmeldung entfernen</strong>
+        <p>Alexa-Geräte oder Skills werden dadurch nicht verändert.</p>
+      </div>
+      <button id="forget-button" class="button button--danger" type="button">Entfernen</button>
+    </div>
+  </dialog>
+</body>
+</html>

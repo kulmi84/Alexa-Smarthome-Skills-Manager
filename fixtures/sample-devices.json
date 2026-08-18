@@ -1,0 +1,131 @@
+{
+  "activeSkills": [
+    {
+      "id": "amzn1.ask.skill.11111111-2222-3333-4444-555555555555",
+      "asin": "B012345678",
+      "name": "Home Assistant",
+      "type": "SMART_HOME"
+    },
+    {
+      "id": "amzn1.ask.skill.aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "asin": "B087654321",
+      "name": "Smart Life",
+      "type": "SMART_HOME"
+    },
+    {
+      "id": "amzn1.ask.skill.12345678-1234-1234-1234-123456789012",
+      "asin": "B0ZDFHEUTE",
+      "name": "ZDFheute",
+      "type": "CUSTOM"
+    }
+  ],
+  "skillCatalog": {
+    "catalog": {
+      "catalogItems": [
+        {
+          "skillId": "amzn1.ask.skill.11111111-2222-3333-4444-555555555555",
+          "title": "Home Assistant"
+        },
+        {
+          "skillId": "amzn1.ask.skill.aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+          "title": "Smart Life"
+        }
+      ]
+    }
+  },
+  "endpoints": [
+    {
+      "endpointId": "endpoint-1",
+      "friendlyName": "Lampe Wohnzimmer",
+      "displayCategories": { "primary": { "value": "LIGHT" } },
+      "legacyAppliance": {
+        "applianceId": "SKILL_homeassistant_lampe_wohnzimmer",
+        "friendlyName": "Lampe Wohnzimmer",
+        "friendlyDescription": "light.wohnzimmer via Home Assistant",
+        "manufacturerName": "Home Assistant",
+        "modelName": "",
+        "applianceTypes": ["LIGHT"],
+        "isEnabled": true,
+        "driverIdentity": {
+          "namespace": "SKILL",
+          "identifier": "eyJza2lsbElkIjoiYW16bjEuYXNrLnNraWxsLjExMTExMTExLTIyMjItMzMzMy00NDQ0LTU1NTU1NTU1NTU1NSIsInN0YWdlIjoibGl2ZSJ9"
+        },
+        "applianceNetworkState": {
+          "reachability": "REACHABLE",
+          "lastSeenAt": 1786982400000,
+          "createdAt": 1750000000000
+        }
+      }
+    },
+    {
+      "endpointId": "endpoint-2",
+      "friendlyName": "Nine",
+      "displayCategories": { "primary": { "value": "SMARTPLUG" } },
+      "legacyAppliance": {
+        "applianceId": "SKILL_smartlife_nine_1",
+        "friendlyName": "Nine",
+        "friendlyDescription": "Smart plug via Smart Life",
+        "manufacturerName": "Tuya",
+        "modelName": "Smart Plug",
+        "applianceTypes": ["SMARTPLUG"],
+        "isEnabled": true,
+        "driverIdentity": {
+          "namespace": "SKILL",
+          "identifier": "eyJza2lsbElkIjoiYW16bjEuYXNrLnNraWxsLmFhYWFhYWFhLWJiYmItY2NjYy1kZGRkLWVlZWVlZWVlZWVlZSIsInN0YWdlIjoibGl2ZSJ9"
+        },
+        "applianceNetworkState": {
+          "reachability": "UNREACHABLE",
+          "lastSeenAt": 1750000000000,
+          "createdAt": 1700000000000
+        }
+      }
+    },
+    {
+      "endpointId": "endpoint-3",
+      "friendlyName": "Nine",
+      "displayCategories": { "primary": { "value": "SWITCH" } },
+      "legacyAppliance": {
+        "applianceId": "SKILL_unknown_nine_2",
+        "friendlyName": "Nine",
+        "friendlyDescription": "Switch from an older skill",
+        "manufacturerName": "Unbekannter Hersteller",
+        "modelName": "Switch V1",
+        "applianceTypes": ["SWITCH"],
+        "isEnabled": false,
+        "driverIdentity": {
+          "namespace": "SKILL",
+          "identifier": "eyJza2lsbElkIjoiYW16bjEuYXNrLnNraWxsLjk5OTk5OTk5LTg4ODgtNzc3Ny02NjY2LTU1NTU1NTU1NTU1NSIsInN0YWdlIjoibGl2ZSJ9"
+        },
+        "applianceNetworkState": {
+          "reachability": "UNREACHABLE",
+          "lastSeenAt": 1680000000000,
+          "createdAt": 1650000000000
+        }
+      }
+    },
+    {
+      "endpointId": "endpoint-4",
+      "friendlyName": "Bewegungsmelder Flur",
+      "displayCategories": { "primary": { "value": "MOTION_SENSOR" } },
+      "legacyAppliance": {
+        "applianceId": "AAA_SonarCloudService_motion-1",
+        "friendlyName": "Bewegungsmelder Flur",
+        "friendlyDescription": "Zigbee motion sensor",
+        "manufacturerName": "Amazon",
+        "modelName": "Motion Sensor",
+        "connectedVia": "Echo Show Küche",
+        "applianceTypes": ["MOTION_SENSOR"],
+        "isEnabled": true,
+        "driverIdentity": {
+          "namespace": "AAA",
+          "identifier": "SonarCloudService"
+        },
+        "applianceNetworkState": {
+          "reachability": "REACHABLE",
+          "lastSeenAt": 1786982400000,
+          "createdAt": 1760000000000
+        }
+      }
+    }
+  ]
+}

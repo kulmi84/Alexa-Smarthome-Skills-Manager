@@ -1,0 +1,28 @@
+services:
+  alexa-geraeteuebersicht:
+    build: .
+    container_name: alexa-geraeteuebersicht
+    ports:
+      - "${UI_PORT:-8765}:8080"
+      - "3456:3456"
+    environment:
+      TZ: Europe/Berlin
+      AMAZON_PAGE: amazon.de
+      ACCEPT_LANGUAGE: de-DE
+      PORT: "8080"
+      PROXY_PORT: "3456"
+      MOCK_MODE: "${MOCK_MODE:-false}"
+    volumes:
+      - alexa-session:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: "no"
+
+volumes:
+  alexa-session:
+    name: alexa-geraeteuebersicht-session

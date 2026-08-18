@@ -1,0 +1,21 @@
+{
+  "name": "alexa-geraeteuebersicht",
+  "version": "0.6.2",
+  "private": true,
+  "description": "Lokaler Alexa Smarthome/Skills-Manager zur Geräte- und Skillverwaltung.",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "alexa-remote2": "8.1.0"
+  },
+  "overrides": {
+    "cookie": "0.7.2"
+  }
+}
