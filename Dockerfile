@@ -11,7 +11,10 @@ COPY lib ./lib
 COPY public ./public
 COPY fixtures ./fixtures
 
-RUN mkdir -p /app/data \
+# Keep the main frontend source untouched: append the capability detail extension
+# during the image build so it runs after public/app.js has defined showDetails().
+RUN cat public/capabilities-addon.js >> public/app.js \
+    && mkdir -p /app/data \
     && chown -R node:node /app
 
 USER node
@@ -22,7 +25,8 @@ ENV NODE_ENV=production \
     DATA_DIR=/app/data \
     AMAZON_PAGE=amazon.de \
     ACCEPT_LANGUAGE=de-DE \
-    MOCK_MODE=false
+    MOCK_MODE=false \
+    NODE_OPTIONS=--require=/app/lib/capabilities-preload.js
 
 EXPOSE 8080 3456
 
