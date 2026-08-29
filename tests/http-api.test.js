@@ -30,7 +30,7 @@ test('liefert die neue Aufräumansicht und blockiert Löschungen im Testmodus', 
     assert.match(page, /skill-command-device/);
     assert.match(page, /details-enable-button/);
     assert.match(page, /Alexa Smarthome\/Skills-Manager/);
-    assert.match(page, /Version 0\.6\.2/);
+    assert.match(page, /Version 0\.7\.0/);
     assert.match(page, /Deaktivierte Geräte/);
     const clientScript = await fetch(`http://127.0.0.1:${port}/app.js`).then((response) => response.text());
     assert.match(clientScript, /Amazon meldet:/);

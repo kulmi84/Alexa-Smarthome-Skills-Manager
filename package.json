@@ -1,6 +1,6 @@
 {
   "name": "alexa-geraeteuebersicht",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "private": true,
   "description": "Lokaler Alexa Smarthome/Skills-Manager zur Geräte- und Skillverwaltung.",
   "main": "app.js",
